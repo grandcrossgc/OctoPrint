@@ -373,8 +373,18 @@ class MachineCom(object):
 		if callbackObject == None:
 			callbackObject = MachineComPrintCallback()
 
+		flowControl = settings().get(["serial", "flowControl"])
+		flowControlRTSCTS = False
+		flowControlXONXOFF = False
+		if flowControl == "RTS/CTS":
+			flowControlRTSCTS = True
+		elif flowControl == "XON/XOFF":
+			flowControlXONXOFF = True
+
 		self._port = port
 		self._baudrate = baudrate
+		self._flowControlRTSCTS = flowControlRTSCTS
+		self._flowControlXONXOFF = flowControlXONXOFF
 		self._callback = callbackObject
 		self._printerProfileManager = printerProfileManager
 		self._state = self.STATE_NONE
@@ -2414,7 +2424,7 @@ class MachineCom(object):
 		return None
 
 	def _openSerial(self):
-		def default(_, port, baudrate, read_timeout):
+		def default(_, port, baudrate, read_timeout, fcrtscts=False, fcdsrdtr=False, fcxonxoff=False):
 			if port is None or port == 'AUTO':
 				# no known port, try auto detection
 				self._changeState(self.STATE_DETECT_SERIAL)
@@ -2432,12 +2442,16 @@ class MachineCom(object):
 				serial_obj = serial.Serial(str(port),
 				                           baudrates[0],
 				                           timeout=read_timeout,
+				                           rtscts = self._flowControlRTSCTS,
+				                           xonxoff = self._flowControlXONXOFF,
 				                           write_timeout=10000,
 				                           parity=serial.PARITY_ODD)
 			else:
 				serial_obj = serial.Serial(str(port),
 				                           baudrate,
 				                           timeout=read_timeout,
+				                           rtscts = self._flowControlRTSCTS,
+				                           xonxoff = self._flowControlXONXOFF,
 				                           write_timeout=10000,
 				                           parity=serial.PARITY_ODD)
 			serial_obj.close()
@@ -2450,6 +2464,7 @@ class MachineCom(object):
 		for name, factory in serial_factories:
 			try:
 				serial_obj = factory(self, self._port, self._baudrate, settings().getFloat(["serial", "timeout", "connection"]))
+
 			except:
 				exception_string = get_exception_string()
 				self._trigger_error("Connection error, see Terminal tab", "connection")

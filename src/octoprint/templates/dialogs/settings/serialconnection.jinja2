@@ -22,6 +22,12 @@
                         <select id="settings-baudrate" data-bind="options: serial_baudrateOptions, optionsCaption: 'AUTO', value: serial_baudrate"></select>
                     </div>
                 </div>
+                <div class="control-group" title="{{ _('Flow control method used when communicating with the printer') }}">
+                    <label class="control-label" for="settings-flowControl">{{ _('Flow Control') }}</label>
+                    <div class="controls">
+                        <select id="settings-flowControl" data-bind="options: serial_available_flowControls, value: serial_flowControl"></select>
+                    </div>
+                </div>
                 <div class="control-group" title="{{ _('Makes OctoPrint try to connect to the printer automatically during start up') }}">
                     <div class="controls">
                         <label class="checkbox">

@@ -101,6 +101,7 @@ $(function() {
 
         self.webcam_available_ratios = ["16:9", "4:3"];
         self.webcam_available_videocodecs = ["mpeg2video", "libx264"];
+        self.serial_available_flowControls = ["None", "RTS/CTS", "XON/XOFF"];
 
         var auto_locale = {language: "_default", display: gettext("Autodetect from browser"), english: undefined};
         self.locales = ko.observableArray([auto_locale].concat(_.sortBy(_.values(AVAILABLE_LOCALES), function(n) {
@@ -155,6 +156,7 @@ $(function() {
         self.serial_baudrate = ko.observable();
         self.serial_portOptions = ko.observableArray([]);
         self.serial_baudrateOptions = ko.observableArray([]);
+        self.serial_flowControl = ko.observable(undefined);
         self.serial_autoconnect = ko.observable(undefined);
         self.serial_timeoutConnection = ko.observable(undefined);
         self.serial_timeoutDetection = ko.observable(undefined);
