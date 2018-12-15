@@ -202,6 +202,9 @@ def baudrateList():
 
 	return candidates
 
+def flowControlList():
+	return ["None", "Software", "Hardware"]
+
 gcodeToEvent = {
 	# pause for user input
 	"M226": Events.WAITING,
@@ -357,7 +360,7 @@ class MachineCom(object):
 	CAPABILITY_SUPPORT_DETECTED = "detected"
 	CAPABILITY_SUPPORT_DISABLED = "disabled"
 
-	def __init__(self, port = None, baudrate=None, callbackObject=None, printerProfileManager=None):
+	def __init__(self, port = None, baudrate=None, flowControl=None, callbackObject=None, printerProfileManager=None):
 		self._logger = logging.getLogger(__name__)
 		self._serialLogger = logging.getLogger("SERIAL")
 		self._phaseLogger = logging.getLogger(__name__ + ".command_phases")
@@ -373,18 +376,12 @@ class MachineCom(object):
 		if callbackObject == None:
 			callbackObject = MachineComPrintCallback()
 
-		flowControl = settings().get(["serial", "flowControl"])
-		flowControlRTSCTS = False
-		flowControlXONXOFF = False
-		if flowControl == "RTS/CTS":
-			flowControlRTSCTS = True
-		elif flowControl == "XON/XOFF":
-			flowControlXONXOFF = True
+		if flowControl == None:
+			flowControl = settings().get(["serial", "flowControl"])
 
 		self._port = port
 		self._baudrate = baudrate
-		self._flowControlRTSCTS = flowControlRTSCTS
-		self._flowControlXONXOFF = flowControlXONXOFF
+		self._flowControl = flowControl
 		self._callback = callbackObject
 		self._printerProfileManager = printerProfileManager
 		self._state = self.STATE_NONE
@@ -765,7 +762,7 @@ class MachineCom(object):
 		return self._currentTool
 
 	def getConnection(self):
-		return self._port, self._baudrate
+		return self._port, self._baudrate, self._flowControl
 
 	def getTransport(self):
 		return self._serial
@@ -2299,7 +2296,7 @@ class MachineCom(object):
 		else:
 			self.initSdCard(tags={"trigger:comm.on_connected"})
 
-		payload = dict(port=self._port, baudrate=self._baudrate)
+		payload = dict(port=self._port, baudrate=self._baudrate, flowControl=self._flowControl)
 		eventManager().fire(Events.CONNECTED, payload)
 		self.sendGcodeScript("afterPrinterConnected", replacements=dict(event=payload))
 
@@ -2423,8 +2420,18 @@ class MachineCom(object):
 
 		return None
 
+	def _getFlowControl(self):
+		flowControlRTSCTS = False
+		flowControlXONXOFF = False
+		if self._flowControl == "Hardware":
+			flowControlRTSCTS = True
+		elif self._flowControl == "Software":
+			flowControlXONXOFF = True
+
+		return flowControlRTSCTS, flowControlXONXOFF
+
 	def _openSerial(self):
-		def default(_, port, baudrate, read_timeout, fcrtscts=False, fcdsrdtr=False, fcxonxoff=False):
+		def default(_, port, baudrate, read_timeout):
 			if port is None or port == 'AUTO':
 				# no known port, try auto detection
 				self._changeState(self.STATE_DETECT_SERIAL)
@@ -2435,6 +2442,8 @@ class MachineCom(object):
 					self._log(error_text)
 					return None
 
+			fcRTSCTS, fcXONXOFF = self._getFlowControl()
+
 			# connect to regular serial port
 			self._log("Connecting to: %s" % port)
 			if baudrate == 0:
@@ -2442,16 +2451,16 @@ class MachineCom(object):
 				serial_obj = serial.Serial(str(port),
 				                           baudrates[0],
 				                           timeout=read_timeout,
-				                           rtscts = self._flowControlRTSCTS,
-				                           xonxoff = self._flowControlXONXOFF,
+				                           rtscts = fcRTSCTS,
+				                           xonxoff = fcXONXOFF,
 				                           write_timeout=10000,
 				                           parity=serial.PARITY_ODD)
 			else:
 				serial_obj = serial.Serial(str(port),
 				                           baudrate,
 				                           timeout=read_timeout,
-				                           rtscts = self._flowControlRTSCTS,
-				                           xonxoff = self._flowControlXONXOFF,
+				                           rtscts = fcRTSCTS,
+				                           xonxoff = fcXONXOFF,
 				                           write_timeout=10000,
 				                           parity=serial.PARITY_ODD)
 			serial_obj.close()

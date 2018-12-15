@@ -53,14 +53,16 @@ class PrinterInterface(object):
 	@classmethod
 	def get_connection_options(cls, *args, **kwargs):
 		"""
-		Retrieves the available ports, baudrates, preferred port and baudrate for connecting to the printer.
+		Retrieves the available ports, baudrates, flow control, preferred port and baudrate for connecting to the printer.
 
 		Returned ``dict`` has the following structure::
 
 		    ports: <list of available serial ports>
 		    baudrates: <list of available baudrates>
+		    flowControls: <list of flow control methods>
 		    portPreference: <configured default serial port>
 		    baudratePreference: <configured default baudrate>
+                    glowControlPreference: <configures default flow control>
 		    autoconnect: <whether autoconnect upon server startup is enabled or not>
 
 		Returns:
@@ -70,20 +72,23 @@ class PrinterInterface(object):
 		return {
 			"ports": sorted(comm.serialList(), key=natural_key),
 			"baudrates": sorted(comm.baudrateList(), reverse=True),
+			"flowControls": comm.flowControlList(),
 			"portPreference": settings().get(["serial", "port"]),
 			"baudratePreference": settings().getInt(["serial", "baudrate"]),
+			"flowControlPreference": settings().get(["serial", "flowControl"]),
 			"autoconnect": settings().getBoolean(["serial", "autoconnect"])
 		}
 
-	def connect(self, port=None, baudrate=None, profile=None, *args, **kwargs):
+	def connect(self, port=None, baudrate=None, flowControl=None, profile=None, *args, **kwargs):
 		"""
-		Connects to the printer, using the specified serial ``port``, ``baudrate`` and printer ``profile``. If a
+		Connects to the printer, using the specified serial ``port``, ``baudrate``, ``flowControl`` and printer ``profile``. If a
 		connection is already established, that connection will be closed prior to connecting anew with the provided
 		parameters.
 
 		Arguments:
 		    port (str): Name of the serial port to connect to. If not provided, an auto detection will be attempted.
 		    baudrate (int): Baudrate to connect with. If not provided, an auto detection will be attempted.
+                    flowControl (str): Flow control method to use. If not provided it will default to 'None'
 		    profile (str): Name of the printer profile to use for this connection. If not provided, the default
 		        will be retrieved from the :class:`PrinterProfileManager`.
 		"""
@@ -501,8 +506,8 @@ class PrinterInterface(object):
 	def get_current_connection(self, *args, **kwargs):
 		"""
 		Returns:
-		    (tuple) The current connection information as a 4-tuple ``(connection_string, port, baudrate, printer_profile)``.
-		        If the printer is currently not connected, the tuple will be ``("Closed", None, None, None)``.
+		    (tuple) The current connection information as a 5-tuple ``(connection_string, port, baudrate, flowControl, printer_profile)``.
+		        If the printer is currently not connected, the tuple will be ``("Closed", None, None, None, None)``.
 		"""
 		raise NotImplementedError()
 

@@ -235,7 +235,7 @@ class Printer(PrinterInterface, comm.MachineComPrintCallback):
 
 	#~~ PrinterInterface implementation
 
-	def connect(self, port=None, baudrate=None, profile=None, *args, **kwargs):
+	def connect(self, port=None, baudrate=None, flowControl=None, profile=None, *args, **kwargs):
 		"""
 		 Connects to the printer. If port and/or baudrate is provided, uses these settings, otherwise autodetection
 		 will be attempted.
@@ -252,7 +252,7 @@ class Printer(PrinterInterface, comm.MachineComPrintCallback):
 			# if serial.log is not enabled, log a line to explain that to reduce "serial.log is empty" in tickets...
 			logging.getLogger("SERIAL").info("serial.log is currently not enabled, you can enable it via Settings > Serial Connection > Log communication to serial.log")
 
-		self._comm = comm.MachineCom(port, baudrate, callbackObject=self, printerProfileManager=self._printerProfileManager)
+		self._comm = comm.MachineCom(port, baudrate, flowControl, callbackObject=self, printerProfileManager=self._printerProfileManager)
 
 	def disconnect(self, *args, **kwargs):
 		"""
@@ -608,9 +608,9 @@ class Printer(PrinterInterface, comm.MachineComPrintCallback):
 		if self._comm is None:
 			return "Closed", None, None, None
 
-		port, baudrate = self._comm.getConnection()
+		port, baudrate, flowControl = self._comm.getConnection()
 		printer_profile = self._printerProfileManager.get_current_or_default()
-		return self._comm.getStateString(), port, baudrate, printer_profile
+		return self._comm.getStateString(), port, baudrate, flowControl, printer_profile
 
 	def is_closed_or_error(self, *args, **kwargs):
 		return self._comm is None or self._comm.isClosedOrError()

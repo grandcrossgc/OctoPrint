@@ -16,11 +16,12 @@ from octoprint.access.permissions import Permissions
 @api.route("/connection", methods=["GET"])
 @Permissions.STATUS.require(403)
 def connectionState():
-	state, port, baudrate, printer_profile = printer.get_current_connection()
+	state, port, baudrate, flowControl, printer_profile = printer.get_current_connection()
 	current = {
 		"state": state,
 		"port": port,
 		"baudrate": baudrate,
+		"flowControl": flowControl,
 		"printerProfile": printer_profile["id"] if printer_profile is not None and "id" in printer_profile else "_default"
 	}
 
@@ -46,6 +47,7 @@ def connectionCommand():
 
 		port = None
 		baudrate = None
+		flowControl = None
 		printerProfile = None
 		if "port" in data.keys():
 			port = data["port"]
@@ -55,6 +57,10 @@ def connectionCommand():
 			baudrate = data["baudrate"]
 			if baudrate not in connection_options["baudrates"] and baudrate != 0:
 				return make_response("Invalid baudrate: %d" % baudrate, 400)
+		if "flowControl" in data.keys():
+			flowControl = data["flowControl"]
+			if flowControl not in connection_options["flowControls"] and flowControl != 0:
+				return make_response("Invalid flowControl: %d" % flowControl, 400)
 		if "printerProfile" in data.keys():
 			printerProfile = data["printerProfile"]
 			if not printerProfileManager.exists(printerProfile):
@@ -62,11 +68,12 @@ def connectionCommand():
 		if "save" in data.keys() and data["save"]:
 			settings().set(["serial", "port"], port)
 			settings().setInt(["serial", "baudrate"], baudrate)
+			settings().set(["serial", "flowControl"], flowControl)
 			printerProfileManager.set_default(printerProfile)
 		if "autoconnect" in data.keys():
 			settings().setBoolean(["serial", "autoconnect"], data["autoconnect"])
 		settings().save()
-		printer.connect(port=port, baudrate=baudrate, profile=printerProfile)
+		printer.connect(port=port, baudrate=baudrate, flowControl=flowControl, profile=printerProfile)
 	elif command == "disconnect":
 		printer.disconnect()
 	elif command == "fake_ack":
@@ -82,9 +89,11 @@ def _get_options():
 	options = dict(
 		ports=connection_options["ports"],
 		baudrates=connection_options["baudrates"],
+		flowControls=connection_options["flowControls"],
 		printerProfiles=[dict(id=printer_profile["id"], name=printer_profile["name"] if "name" in printer_profile else printer_profile["id"]) for printer_profile in profile_options.values() if "id" in printer_profile],
 		portPreference=connection_options["portPreference"],
 		baudratePreference=connection_options["baudratePreference"],
+		flowControlPreference=connection_options["flowControlPreference"],
 		printerProfilePreference=default_profile["id"] if "id" in default_profile else None
 	)
 

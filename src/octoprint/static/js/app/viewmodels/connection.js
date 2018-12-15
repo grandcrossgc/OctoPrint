@@ -23,9 +23,11 @@ $(function() {
 
         self.portOptions = ko.observableArray(undefined);
         self.baudrateOptions = ko.observableArray(undefined);
+        self.flowControlOptions = ko.observableArray(undefined);
         self.printerOptions = ko.observableArray(undefined);
         self.selectedPort = ko.observable(undefined);
         self.selectedBaudrate = ko.observable(undefined);
+	self.selectedFlowControl = ko.observable(undefined);
         self.selectedPrinter = ko.observable(undefined);
         self.saveSettings = ko.observable(undefined);
         self.autoconnect = ko.observable(undefined);
@@ -61,18 +63,23 @@ $(function() {
         self.fromResponse = function(response) {
             var ports = response.options.ports;
             var baudrates = response.options.baudrates;
+            var flowControls = response.options.flowControls;
             var portPreference = response.options.portPreference;
             var baudratePreference = response.options.baudratePreference;
+            var flowControlPreference = response.options.flowControlPreference;
             var printerPreference = response.options.printerProfilePreference;
             var printerProfiles = response.options.printerProfiles;
 
             self.portOptions(ports);
             self.baudrateOptions(baudrates);
+            self.flowControlOptions(flowControls);
 
             if (!self.selectedPort() && ports && ports.indexOf(portPreference) >= 0)
                 self.selectedPort(portPreference);
             if (!self.selectedBaudrate() && baudrates && baudrates.indexOf(baudratePreference) >= 0)
                 self.selectedBaudrate(baudratePreference);
+            if (!self.selectedFlowControl() && flowControls && flowControls.indexOf(flowControlPreference) >= 0)
+                self.selectedFlowControl(flowControlPreference);
             if (!self.selectedPrinter() && printerProfiles && printerProfiles.indexOf(printerPreference) >= 0)
                 self.selectedPrinter(printerPreference);
 
@@ -123,6 +130,7 @@ $(function() {
                 var data = {
                     "port": self.selectedPort() || "AUTO",
                     "baudrate": self.selectedBaudrate() || 0,
+                    "flowControl": self.selectedFlowControl() || "None",
                     "printerProfile": self.selectedPrinter(),
                     "autoconnect": self.settings.serial_autoconnect()
                 };

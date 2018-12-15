@@ -2,6 +2,8 @@
 <select id="connection_ports" data-bind="options: portOptions, optionsCaption: 'AUTO', value: selectedPort, css: {disabled: !isErrorOrClosed()}, enable: isErrorOrClosed()"></select>
 <label for="connection_baudrates" data-bind="css: {disabled: !isErrorOrClosed()}, enable: isErrorOrClosed()">{{ _('Baudrate') }}</label>
 <select id="connection_baudrates" data-bind="options: baudrateOptions, optionsCaption: 'AUTO', value: selectedBaudrate, css: {disabled: !isErrorOrClosed()}, enable: isErrorOrClosed()"></select>
+<label for="connection_flowControl" data-bind="css: {disabled: !isErrorOrClosed()}, enable: isErrorOrClosed()">{{ _('Flow Control') }}</label>
+<select id="connection_flowControl" data-bind="options: flowControlOptions, value: selectedFlowControl, css: {disabled: !isErrorOrClosed()}, enable: isErrorOrClosed()"></select>
 <label for="connection_printers" data-bind="css: {disabled: !isErrorOrClosed()}, enable: isErrorOrClosed()">{{ _('Printer Profile') }}</label>
 <select id="connection_printers" data-bind="options: printerOptions, optionsText: 'name', optionsValue: 'id', value: selectedPrinter, css: {disabled: !isErrorOrClosed()}, enable: isErrorOrClosed()"></select>
 <label class="checkbox">
