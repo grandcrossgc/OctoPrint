@@ -9,7 +9,7 @@ import octoprint.plugin
 
 
 class VirtualPrinterPlugin(octoprint.plugin.SettingsPlugin):
-	def virtual_printer_factory(self, comm_instance, port, baudrate,
+	def virtual_printer_factory(self, comm_instance, port, baudrate, flowControl,
 	                            read_timeout):
 		if not port == "VIRTUAL":
 			return None

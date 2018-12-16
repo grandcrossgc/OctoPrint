@@ -2434,7 +2434,7 @@ class MachineCom(object):
 		return flowControlRTSCTS, flowControlXONXOFF
 
 	def _openSerial(self):
-		def default(_, port, baudrate, read_timeout, flowControl=None):
+		def default(_, port, baudrate, flowControl, read_timeout):
 			if port is None or port == 'AUTO':
 				# no known port, try auto detection
 				self._changeState(self.STATE_DETECT_SERIAL)
@@ -2475,7 +2475,7 @@ class MachineCom(object):
 		serial_factories = self._serial_factory_hooks.items() + [("default", default)]
 		for name, factory in serial_factories:
 			try:
-				serial_obj = factory(self, self._port, self._baudrate, settings().getFloat(["serial", "timeout", "connection"]), self._flowControl)
+				serial_obj = factory(self, self._port, self._baudrate, self._flowControl, settings().getFloat(["serial", "timeout", "connection"]))
 
 			except:
 				exception_string = get_exception_string()

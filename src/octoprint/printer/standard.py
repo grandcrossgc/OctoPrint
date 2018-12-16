@@ -606,7 +606,7 @@ class Printer(PrinterInterface, comm.MachineComPrintCallback):
 
 	def get_current_connection(self, *args, **kwargs):
 		if self._comm is None:
-			return "Closed", None, None, None
+			return "Closed", None, None, None, None
 
 		port, baudrate, flowControl = self._comm.getConnection()
 		printer_profile = self._printerProfileManager.get_current_or_default()

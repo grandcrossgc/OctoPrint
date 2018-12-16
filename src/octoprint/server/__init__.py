@@ -725,9 +725,7 @@ class Server(object):
 		# auto connect
 		if self._settings.getBoolean(["serial", "autoconnect"]):
 			try:
-				(port, baudrate, flowControl) = self._settings.get(["serial", "port"]),
-						self._settings.getInt(["serial", "baudrate"],)
-						self._settings.getInt(["serial", "flowControl"])
+				(port, baudrate, flowControl) = self._settings.get(["serial", "port"]), self._settings.getInt(["serial", "baudrate"]), self._settings.getInt(["serial", "flowControl"])
 				printer_profile = printerProfileManager.get_default()
 				connectionOptions = printer.__class__.get_connection_options()
 				if port in connectionOptions["ports"] or port == "AUTO":
