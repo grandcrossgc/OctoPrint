@@ -440,10 +440,14 @@ mapped from the same fields in ``config.yaml`` unless otherwise noted:
      - Current serial port
    * - ``serial.baudrate``
      - Current serial baudrate
+   * - ``serial.flowControl``
+     - Current serial flow control method
    * - ``serial.portOptions``
      - Available serial ports
    * - ``serial.baudrateOptions``
      - Available serial baudrates
+   * - ``serial.flowControlOptions``
+     - Available serial flow control methods
    * - ``serial.autoconnect``
      -
    * - ``serial.timeoutConnection``

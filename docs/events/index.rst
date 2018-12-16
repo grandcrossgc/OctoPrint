@@ -131,6 +131,7 @@ Connected
 
      * ``port``: the connected serial port
      * ``baudrate``: the baud rate
+     * ``flowControl``: the flow control method
 
 Disconnecting
    The server is going to disconnect from the printer. Note that this

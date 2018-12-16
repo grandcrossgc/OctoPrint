@@ -744,6 +744,9 @@ Use the following settings to configure the serial connection to the printer:
      # Use the following option to define the default baudrate, defaults to unset (= AUTO)
      baudrate: 115200
 
+     # Use the following option to define the default flow control method, defaults to unset (= None)
+     flowControl: None
+
      # Whether to automatically connect to the printer on server startup (if available)
      autoconnect: false
 

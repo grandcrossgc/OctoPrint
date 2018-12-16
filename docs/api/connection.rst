@@ -34,14 +34,17 @@ Get connection settings
           "state": "Operational",
           "port": "/dev/ttyACM0",
           "baudrate": 250000,
+          "flowControl": "None",
           "printerProfile": "_default"
         },
         "options": {
           "ports": ["/dev/ttyACM0", "VIRTUAL"],
           "baudrates": [250000, 230400, 115200, 57600, 38400, 19200, 9600],
+          "flowControls": ["None", "Software", "Hardware"]
           "printerProfiles": [{"name": "Default", "id": "_default"}],
           "portPreference": "/dev/ttyACM0",
           "baudratePreference": 250000,
+          "flowControlPreference": "None",
           "printerProfilePreference": "_default",
           "autoconnect": true
         }
@@ -65,10 +68,12 @@ Issue a connection command
        no preference is available auto detection will be attempted.
      * ``baudrate``: Optional, specific baudrate to connect with. If not set the current ``baudratePreference`` will
        be used, or if no preference is available auto detection will be attempted.
+     * ``flowControl``: Optional, specific flow control method to connect with. If not set the current
+      ``flowControlPreference`` will be used.
      * ``printerProfile`` Optional, specific printer profile to use for connection. If not set the current default printer
        profile will be used.
-     * ``save``: Optional, whether to save the request's ``port`` and ``baudrate`` settings as new preferences. Defaults
-       to ``false`` if not set.
+     * ``save``: Optional, whether to save the request's ``port`, ``baudrate``, and ``flowControl`` settings as new preferences.
+       Defaults to ``false`` if not set.
      * ``autoconnect``: Optional, whether to automatically connect to the printer on OctoPrint's startup in the future.
        If not set no changes will be made to the current configuration.
 
@@ -96,6 +101,7 @@ Issue a connection command
         "command": "connect",
         "port": "/dev/ttyACM0",
         "baudrate": 115200,
+        "flowControl": "None",
         "printerProfile": "my_printer_profile",
         "save": true,
         "autoconnect": true
@@ -145,7 +151,8 @@ Issue a connection command
                               of the available ports.
    :json number baudrate:     ``connect`` command: The baudrate to connect with. If left out either the existing
                               ``baudratePreference`` will be used, or if that is not available OctoPrint will attempt
-                              autodetection. Must be part of the available baudrates.
+   :json number flowControl:  ``connect`` command: The flow control method  to connect with. If left out the existing
+                              ``flowControlPreference`` will be used.
    :json string printerProfile: ``connect`` command: The id of the printer profile to use for the connection. If left out the current
                                 default printer profile will be used. Must be part of the available printer profiles.
    :json boolean save:        ``connect`` command: Whether to save the supplied connection settings as the new preference.

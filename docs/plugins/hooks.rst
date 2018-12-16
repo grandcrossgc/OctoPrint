@@ -832,7 +832,7 @@ octoprint.comm.protocol.temperatures.received
 octoprint.comm.transport.serial.factory
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. py:function:: serial_factory_hook(comm_instance, port, baudrate, read_timeout, *args, **kwargs)
+.. py:function:: serial_factory_hook(comm_instance, port, baudrate, flowControl, read_timeout, *args, **kwargs)
 
    Return a serial object to use as serial connection to the printer. If a handler cannot create a serial object
    for the specified ``port`` (and ``baudrate``), it should just return ``None``.
@@ -868,7 +868,7 @@ octoprint.comm.transport.serial.factory
    .. code-block:: python
       :linenos:
 
-      def default(comm_instance, port, baudrate, connection_timeout):
+      def default(comm_instance, port, baudrate, flowControl, connection_timeout):
           if port is None or port == 'AUTO':
               # no known port, try auto detection
               comm_instance._changeState(comm_instance.STATE_DETECT_SERIAL)

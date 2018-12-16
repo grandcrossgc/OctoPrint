@@ -20,6 +20,7 @@
 
      * ``port``
      * ``baudrate``
+     * ``flowControl``
      * ``printerProfile``
      * ``save``
      * ``autoconnect``
