@@ -107,7 +107,8 @@ class TrackingPlugin(octoprint.plugin.SettingsPlugin,
 			self._track_printjob_event(event, payload)
 		elif event in (Events.CONNECTED,):
 			self._printer_connection_parameters = dict(port=payload["port"],
-			                                           baudrate=payload["baudrate"])
+			                                           baudrate=payload["baudrate"],
+								   flowControl=payload["flowControl"])
 			self._record_next_firmware_info = True
 		elif event in (Events.FIRMWARE_DATA,) and self._record_next_firmware_info:
 			self._record_next_firmware_info = False
@@ -231,6 +232,7 @@ class TrackingPlugin(octoprint.plugin.SettingsPlugin,
 			if self._printer_connection_parameters:
 				args["printer_port"] = self._printer_connection_parameters["port"]
 				args["printer_baudrate"] = self._printer_connection_parameters["baudrate"]
+				args["printer_flowControl"] = self._printer_connection_parameters["flowControl"]
 			self._track("printer_connected", **args)
 
 	def _track(self, event, **kwargs):

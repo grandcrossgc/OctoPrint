@@ -277,7 +277,8 @@ function DataUpdater(allViewModels, connectCallback, disconnectCallback) {
                         break;
                     }
                     case "autodetect_port":
-                    case "autodetect_baudrate": {
+                    case "autodetect_baudrate":
+                    case "autodetect_flowControl": {
                         // ignore
                         break;
                     }

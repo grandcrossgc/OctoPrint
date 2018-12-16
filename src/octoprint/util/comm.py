@@ -2420,18 +2420,21 @@ class MachineCom(object):
 
 		return None
 
-	def _getFlowControl(self):
+	def _getFlowControl(self, flowControl):
+		if flowControl == None:
+			flowControl = settings().get(["serial", "flowControl"])
+
 		flowControlRTSCTS = False
 		flowControlXONXOFF = False
-		if self._flowControl == "Hardware":
+		if flowControl == "Hardware":
 			flowControlRTSCTS = True
-		elif self._flowControl == "Software":
+		elif flowControl == "Software":
 			flowControlXONXOFF = True
 
 		return flowControlRTSCTS, flowControlXONXOFF
 
 	def _openSerial(self):
-		def default(_, port, baudrate, read_timeout):
+		def default(_, port, baudrate, read_timeout, flowControl=None):
 			if port is None or port == 'AUTO':
 				# no known port, try auto detection
 				self._changeState(self.STATE_DETECT_SERIAL)
@@ -2442,7 +2445,7 @@ class MachineCom(object):
 					self._log(error_text)
 					return None
 
-			fcRTSCTS, fcXONXOFF = self._getFlowControl()
+			fcRTSCTS, fcXONXOFF = self._getFlowControl(flowControl)
 
 			# connect to regular serial port
 			self._log("Connecting to: %s" % port)
@@ -2472,7 +2475,7 @@ class MachineCom(object):
 		serial_factories = self._serial_factory_hooks.items() + [("default", default)]
 		for name, factory in serial_factories:
 			try:
-				serial_obj = factory(self, self._port, self._baudrate, settings().getFloat(["serial", "timeout", "connection"]))
+				serial_obj = factory(self, self._port, self._baudrate, settings().getFloat(["serial", "timeout", "connection"]), self._flowControl)
 
 			except:
 				exception_string = get_exception_string()
